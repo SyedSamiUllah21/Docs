@@ -517,7 +517,7 @@ export default function DocumentEditorPage() {
       case "copy":         editorInstance?.chain().focus().run(); document.execCommand("copy"); break;
       case "paste":        editorInstance?.chain().focus().run(); document.execCommand("paste"); break;
       case "select-all":   editorInstance?.chain().focus().selectAll().run(); break;
-      case "find":         window.find ? window.find("") : alert("Use Ctrl+F / ⌘+F to search"); break;
+      case "find":         (window as any).find ? (window as any).find("") : alert("Use Ctrl+F / ⌘+F to search"); break;
 
       // ── Format ──
       case "bold":         editorInstance?.chain().focus().toggleBold().run(); break;

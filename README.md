@@ -109,12 +109,19 @@ The database seed script automatically creates two test accounts you can use to 
 ## 🌍 Deployment
 
 ### Deploying the Frontend (Vercel)
-The frontend is built with Next.js and can be deployed directly to [Vercel](https://vercel.com) for free. Ensure you set the `NEXT_PUBLIC_API_URL` environment variable to your deployed backend URL.
+Vercel is the best and easiest place to deploy the Next.js frontend.
+1. Push your repository to GitHub.
+2. Import the repository into [Vercel](https://vercel.com).
+3. Set the Root Directory to `frontend`.
+4. Add the `NEXT_PUBLIC_API_URL` environment variable pointing to your deployed backend.
+5. Deploy!
 
-### Deploying the Backend
-Because this app uses **SQLite** (a local file database) and **Multer** for local file uploads, you **must** deploy the backend to a provider that supports **persistent volumes**. 
-- **Recommended**: [Fly.io](https://fly.io/) or [Railway.app](https://railway.app/).
-- **Note on Render/Vercel**: Deploying the backend to Render's free tier or Vercel will result in database wipes on restart due to ephemeral/read-only file systems. To deploy there, switch the database to PostgreSQL and uploads to a cloud provider like AWS S3 or Vercel Blob.
+### Deploying the Backend (Render.com)
+You can deploy the Node.js/Express backend for free on [Render](https://render.com), but **you must make two architectural changes first** because Render's free tier uses ephemeral storage (it wipes the hard drive on every restart):
+1. **Switch Database**: Change from SQLite to PostgreSQL. You can use Render's free PostgreSQL database or a service like Neon/Supabase. Update your `schema.prisma` provider to `"postgresql"` and set the `DATABASE_URL` environment variable.
+2. **Switch Uploads**: Change the local Multer upload setup to use cloud storage (like AWS S3, Cloudinary, or Vercel Blob) so uploaded files are not deleted when the server sleeps.
+
+Once those two changes are made, you can easily deploy the `backend` folder as a "Web Service" on Render.
 
 ---
 

@@ -2,7 +2,7 @@
 
 ![FastDocs Banner](https://via.placeholder.com/1200x400/0f172a/ffffff?text=FastDocs+-+Full-Stack+Document+Editor)
 
-FastDocs is a modern, lightweight, full-stack document editor built with **Next.js 14**, **Tailwind CSS**, **TipTap**, **Express.js**, and **SQLite**. It offers a clean, glassmorphic UI, rich text editing, live document sharing, PDF/Word exports, and version history tracking.
+FastDocs is a modern, lightweight, full-stack document editor built with **Next.js 14**, **Tailwind CSS**, **TipTap**, **Express.js**, and **PostgreSQL**. It offers a clean, glassmorphic UI, rich text editing, live document sharing, PDF/Word exports, and version history tracking.
 
 ---
 
@@ -31,7 +31,7 @@ FastDocs is a modern, lightweight, full-stack document editor built with **Next.
 
 ### Backend
 - **Runtime**: [Node.js](https://nodejs.org/) & [Express.js](https://expressjs.com/)
-- **Database**: [SQLite](https://www.sqlite.org/) with [Prisma ORM](https://www.prisma.io/)
+- **Database**: [PostgreSQL](https://www.postgresql.org/) with [Prisma ORM](https://www.prisma.io/)
 - **Authentication**: JWT-based authentication
 - **Validation**: [Zod](https://zod.dev/)
 - **File Storage**: Local file system (Multer)
@@ -45,6 +45,7 @@ Follow these steps to get FastDocs running locally on your machine.
 ### Prerequisites
 - Node.js (v18 or higher recommended)
 - npm or yarn
+- A PostgreSQL database (local or cloud-hosted via Supabase/Neon/Render)
 
 ### 1. Backend Setup
 
@@ -59,7 +60,14 @@ Install the dependencies:
 npm install
 ```
 
-Set up the SQLite database and run the seed script to create test users:
+Create a `.env` file in the `backend` directory and add your PostgreSQL connection string and a secret key for JWT:
+```env
+DATABASE_URL="postgresql://user:password@localhost:5432/fastdocs"
+JWT_SECRET="your-super-secret-key"
+PORT=4000
+```
+
+Set up the database and run the seed script to create test users:
 ```bash
 npx prisma migrate dev --name init
 npx prisma db seed
@@ -108,20 +116,25 @@ The database seed script automatically creates two test accounts you can use to 
 
 ## 🌍 Deployment
 
+### Deploying the Backend (Render.com)
+The Node.js/Express backend is fully configured for deployment on Render's free tier. 
+
+1. Create a free **PostgreSQL** database on Render.
+2. Create a new **Web Service** on Render and link your GitHub repository.
+3. Set the Root Directory to `backend`.
+4. Add your Environment Variables (`DATABASE_URL` and `JWT_SECRET`).
+5. Deploy! Render will automatically install dependencies, run Prisma migrations, and start the API.
+
+*Note: The free tier of Render uses ephemeral file storage. Any files uploaded directly to the local file system (via Multer) will be reset when the server restarts. For production, switch Multer to a cloud provider like AWS S3 or Vercel Blob.*
+
 ### Deploying the Frontend (Vercel)
 Vercel is the best and easiest place to deploy the Next.js frontend.
+
 1. Push your repository to GitHub.
 2. Import the repository into [Vercel](https://vercel.com).
 3. Set the Root Directory to `frontend`.
-4. Add the `NEXT_PUBLIC_API_URL` environment variable pointing to your deployed backend.
+4. Add the `NEXT_PUBLIC_API_URL` environment variable pointing to your deployed backend (e.g., `https://fastdocs-api.onrender.com`).
 5. Deploy!
-
-### Deploying the Backend (Render.com)
-You can deploy the Node.js/Express backend for free on [Render](https://render.com), but **you must make two architectural changes first** because Render's free tier uses ephemeral storage (it wipes the hard drive on every restart):
-1. **Switch Database**: Change from SQLite to PostgreSQL. You can use Render's free PostgreSQL database or a service like Neon/Supabase. Update your `schema.prisma` provider to `"postgresql"` and set the `DATABASE_URL` environment variable.
-2. **Switch Uploads**: Change the local Multer upload setup to use cloud storage (like AWS S3, Cloudinary, or Vercel Blob) so uploaded files are not deleted when the server sleeps.
-
-Once those two changes are made, you can easily deploy the `backend` folder as a "Web Service" on Render.
 
 ---
 

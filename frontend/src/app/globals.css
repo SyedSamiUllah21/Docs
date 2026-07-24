@@ -1,0 +1,216 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-slate-950 text-slate-100 antialiased min-h-screen selection:bg-brand-500 selection:text-white;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+}
+
+/* Glassmorphism card utilities */
+.glass-panel {
+  @apply bg-slate-900/70 backdrop-blur-md border border-slate-800/80 shadow-xl;
+}
+
+.glass-header {
+  @apply bg-slate-950/80 backdrop-blur-lg border-b border-slate-800/80 sticky top-0 z-40;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* TipTap Editor Formatting */
+.ProseMirror {
+  @apply outline-none min-h-[500px] text-slate-200 text-lg leading-relaxed p-6;
+}
+
+.ProseMirror p.is-editor-empty:first-child::before {
+  color: #64748b;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.ProseMirror h1 {
+  @apply text-3xl font-extrabold text-white tracking-tight mb-4 mt-6 border-b border-slate-800 pb-2;
+}
+
+.ProseMirror h2 {
+  @apply text-2xl font-bold text-slate-100 tracking-tight mb-3 mt-5;
+}
+
+.ProseMirror h3 {
+  @apply text-xl font-semibold text-slate-200 tracking-tight mb-2 mt-4;
+}
+
+.ProseMirror p {
+  @apply mb-4 text-slate-300 leading-7;
+}
+
+.ProseMirror ul {
+  @apply list-disc list-inside space-y-1 mb-4 text-slate-300 pl-4;
+}
+
+.ProseMirror ol {
+  @apply list-decimal list-inside space-y-1 mb-4 text-slate-300 pl-4;
+}
+
+.ProseMirror li p {
+  @apply inline mb-0;
+}
+
+.ProseMirror blockquote {
+  @apply border-l-4 border-brand-500 pl-4 italic text-slate-400 my-4 bg-slate-900/40 py-2 rounded-r-lg;
+}
+
+.ProseMirror code {
+  @apply font-mono text-sm bg-slate-800/90 text-brand-300 px-1.5 py-0.5 rounded border border-slate-700;
+}
+
+.ProseMirror pre {
+  @apply bg-slate-900 p-4 rounded-xl font-mono text-sm text-slate-200 overflow-x-auto border border-slate-800 my-4;
+}
+
+.ProseMirror pre code {
+  @apply bg-transparent p-0 border-none text-slate-200;
+}
+
+.ProseMirror a {
+  @apply text-brand-400 underline decoration-brand-400/50 underline-offset-4 hover:text-brand-300 transition-colors;
+}
+
+ul[data-type="taskList"] {
+  list-style: none;
+  padding: 0;
+}
+
+ul[data-type="taskList"] li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+ul[data-type="taskList"] li > label {
+  flex: 0 0 auto;
+  margin-right: 0.5rem;
+  user-select: none;
+}
+
+ul[data-type="taskList"] li > div {
+  flex: 1 1 auto;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   PRINT / PDF EXPORT STYLES
+   When window.print() is called, hide all UI chrome and show only the doc
+   ────────────────────────────────────────────────────────────────────────── */
+@media print {
+  /* Reset page to white */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  html, body {
+    background: white !important;
+    color: black !important;
+    font-size: 12pt !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Hide absolutely everything by default */
+  body > * {
+    display: none !important;
+  }
+
+  /* Hide all sibling layout containers */
+  aside,
+  header,
+  footer,
+  nav,
+  [data-print-hide],
+  .print-hide {
+    display: none !important;
+  }
+
+  /* Show only the print root wrapper */
+  #__next,
+  #__next > * {
+    display: block !important;
+    background: white !important;
+  }
+
+  /* The paper sheet — show it cleanly */
+  .print-doc-sheet {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: auto !important;
+    background: white !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding: 2cm 2.5cm !important;
+    margin: 0 !important;
+    transform: none !important;
+    color: black !important;
+  }
+
+  /* Hide everything NOT the doc sheet */
+  .print-hide,
+  [data-print-hide="true"] {
+    display: none !important;
+  }
+
+  /* ProseMirror content for print */
+  .ProseMirror {
+    color: #111 !important;
+    background: white !important;
+    font-size: 12pt !important;
+    line-height: 1.6 !important;
+    padding: 0 !important;
+    min-height: auto !important;
+  }
+
+  .ProseMirror h1 { color: #000 !important; font-size: 22pt !important; margin-top: 0 !important; border-bottom: 1px solid #ccc !important; }
+  .ProseMirror h2 { color: #111 !important; font-size: 18pt !important; }
+  .ProseMirror h3 { color: #222 !important; font-size: 14pt !important; }
+  .ProseMirror p  { color: #333 !important; margin-bottom: 8pt !important; }
+  .ProseMirror ul,
+  .ProseMirror ol { color: #333 !important; }
+  .ProseMirror a  { color: #1d4ed8 !important; }
+  .ProseMirror blockquote { border-left: 3px solid #6366f1 !important; color: #555 !important; background: #f8f8ff !important; }
+  .ProseMirror code { background: #f3f4f6 !important; color: #374151 !important; border: 1px solid #d1d5db !important; }
+  .ProseMirror pre  { background: #f3f4f6 !important; border: 1px solid #d1d5db !important; }
+
+  /* Page setup */
+  @page {
+    size: A4 portrait;
+    margin: 1.5cm 2cm;
+  }
+
+  /* Don't break headings across pages */
+  h1, h2, h3, h4 { page-break-after: avoid; }
+  p, li { orphans: 3; widows: 3; }
+}

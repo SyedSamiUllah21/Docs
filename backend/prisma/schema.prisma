@@ -1,0 +1,123 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String          @id @default(cuid())
+  email         String          @unique
+  password      String
+  name          String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  
+  ownedDocuments Document[]
+  sharedAccess   DocumentAccess[]
+  comments       Comment[]
+  createdVersions DocumentVersion[]
+  presences      Presence[]
+
+  @@map("users")
+}
+
+model Document {
+  id            String          @id @default(cuid())
+  title         String
+  content       String          @default("{\"type\":\"doc\",\"content\":[]}")
+  ownerId       String
+  owner         User            @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  
+  sharedWith    DocumentAccess[]
+  attachments   Attachment[]
+  versions      DocumentVersion[]
+  comments      Comment[]
+  presences     Presence[]
+
+  @@index([ownerId])
+  @@map("documents")
+}
+
+model DocumentAccess {
+  id            String          @id @default(cuid())
+  documentId    String
+  document      Document        @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  permission    String          @default("view") // "admin" | "editor" | "commenter" | "view" (or "viewer")
+  grantedAt     DateTime        @default(now())
+
+  @@unique([documentId, userId])
+  @@index([userId])
+  @@map("document_access")
+}
+
+model Attachment {
+  id            String          @id @default(cuid())
+  documentId    String
+  document      Document        @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  
+  filename      String
+  filePath      String
+  fileType      String
+  fileSize      Int
+  
+  uploadedAt    DateTime        @default(now())
+
+  @@index([documentId])
+  @@map("attachments")
+}
+
+model DocumentVersion {
+  id            String          @id @default(cuid())
+  documentId    String
+  document      Document        @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  
+  title         String
+  content       String
+  createdById   String
+  createdBy     User            @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  
+  createdAt     DateTime        @default(now())
+
+  @@index([documentId])
+  @@map("document_versions")
+}
+
+model Comment {
+  id            String          @id @default(cuid())
+  documentId    String
+  document      Document        @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  
+  authorId      String
+  author        User            @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  
+  content       String
+  resolved      Boolean         @default(false)
+  createdAt     DateTime        @default(now())
+
+  @@index([documentId])
+  @@map("comments")
+}
+
+model Presence {
+  id            String          @id @default(cuid())
+  documentId    String
+  document      Document        @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  
+  userId        String
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  lastSeen      DateTime        @default(now())
+
+  @@unique([documentId, userId])
+  @@index([documentId])
+  @@map("presence")
+}
